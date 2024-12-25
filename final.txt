@@ -1,0 +1,16 @@
+TITLE: Adeline Greene - Section G - Ultimate Tic-Tac-Toe
+
+PROBLEM DESCRIPTION:
+I will be creating a program that allows users to play a game of Ultimate Tic-Tac-Toe. Ultimate Tic-Tac-Toe is a more difficult version of Tic-Tac-Toe where users simultaneously play 9 Tic-Tac-Toe games to win the overall game composed of a grid of the 9 smaller games. Users will be able to play against another person (both using the same device). The program will respond to user input, show the state of the game after each move, determine the winner, and save the results to a file.
+
+PROGRAM DOCUMENTATION: 
+Build the program with the makefile and then run FP.exe. You might want to move the SFML window. Note that it will take a while to move.
+Follow the prompts in the terminal and type in the terminal. When entering coordinates, enter the column first (the right or left direction, numbers 0->2), a space, and then the row (the up or down direction, numbers 0->2).
+
+CLASS DESCRIPTION: 
+The custom classes I built were an abstract ABoard class, a SmallBoard class, and a LargeBoard class. These classes helped me complete the calculations needed to run the game as well as saving the board state. The LargeBoard class used the SmallBoard class to keep track of the 9 smaller games.
+
+LIST DATA STRUCTURE: I used a static array because I needed to store game boards of 3x3 size.
+
+FILE I/O: 
+I outputted the replay and results to a file in order for the user to see an overview of the game they played.
