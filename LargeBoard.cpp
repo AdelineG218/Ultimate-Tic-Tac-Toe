@@ -34,7 +34,7 @@ void LargeBoard::checkBoardWon(const int ROW, const int COL, const char PLAYER) 
 
 void LargeBoard::updateSmallBoardPos() {
     while (true) {
-        cout << "Please enter the COLumn and ROW of a small board with a space between (eg: 0 2)" << endl;
+        cout << "Please enter the column and row of a small board with a space between (eg: 0 2)" << endl;
         cin >> _currentBoard.row >>  _currentBoard.col;
 
         if(!cin.fail() && !(_currentBoard.row < 0 || _currentBoard.row > 2 || _currentBoard.col < 0 || _currentBoard.col > 2 || _board[_currentBoard.row][_currentBoard.col].won())) {
@@ -60,6 +60,7 @@ bool LargeBoard::updateBoard(const int ROW, const int COL, const char PLAYER) {
     }
     
     if (_board[_currentBoard.row][_currentBoard.col].updateBoard(ROW, COL, PLAYER)) {
+        cout << "Updated board in LB updateBoard" << endl;
         mNumSpacesLeft--;
         checkBoardWon(_currentBoard.row, _currentBoard.col, PLAYER);
         if (_board[ROW][COL].won()) {
@@ -79,7 +80,7 @@ bool LargeBoard::updateBoard(const int ROW, const int COL, const char PLAYER) {
 }
 
 char LargeBoard::getSquare(const int S_ROW, const int S_COL, const int ROW, const int COL) {
-    return _board[S_COL][S_COL].getSquare(ROW, COL);
+    return _board[S_ROW][S_COL].getSquare(ROW, COL);
 }
 
 Point LargeBoard::getSmallBoardPos() const {
