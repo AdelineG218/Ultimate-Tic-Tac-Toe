@@ -221,6 +221,9 @@ int main() {
                 case Event::Closed:
                     window.close();
                     break;
+                case Event::MouseButtonPressed: // adding a game piece when the mouse is clicked
+                    // vec.push_back(new Bubble(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
+                    break;
                 case Event::KeyPressed:
                     if (event.key.code == Keyboard::Escape || event.key.code == Keyboard::Q) {
                         window.close();
