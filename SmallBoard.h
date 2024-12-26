@@ -6,7 +6,7 @@ class SmallBoard : public ABoard {
         SmallBoard();
         void checkBoardWon(const int ROW, const int COL, const char PLAYER) override final;
         char getSquare(const int ROW, const int COL) const;
-        bool updateBoard(const int ROW, const int COL, const char PLAYER) override final;
+        bool updateBoard(const int ROW, const int COL, const char PLAYER) /*override final*/;
     private:
         char** _board;
 };

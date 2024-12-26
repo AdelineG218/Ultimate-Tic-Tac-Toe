@@ -156,60 +156,60 @@ int main() {
 
             cout << endl << "Player " << player << endl; // lets the users know whose turn it is
             // if there's not a specified small board that the player must play in, prompt the user to enter a small board
-            if (smallBoardPos.row < 0 || smallBoardPos.row > 2 || smallBoardPos.col < 0 || smallBoardPos.col > 2 || board.getSmallBoardWon(smallBoardPos.row, smallBoardPos.col)) {
-                board.updateSmallBoardPos();
-            }
+            // if (smallBoardPos.row < 0 || smallBoardPos.row > 2 || smallBoardPos.col < 0 || smallBoardPos.col > 2 || board.getSmallBoardWon(smallBoardPos.row, smallBoardPos.col)) {
+            //     board.updateSmallBoardPos();
+            // }
 
-            // getting the square that the user wants to play in and ensuring it's within the bounds
-            while (true) {
-                cout << "Please enter the column and row (eg: 0 2)" << endl;
-                cin >> x >> y;
+            // // getting the square that the user wants to play in and ensuring it's within the bounds
+            // while (true) {
+            //     cout << "Please enter the column and row (eg: 0 2)" << endl;
+            //     cin >> x >> y;
 
-                if(!cin.fail() && x > -1 && x < 3 && y > -1 && y < 3) {
-                    break;
-                }
+            //     if(!cin.fail() && x > -1 && x < 3 && y > -1 && y < 3) {
+            //         break;
+            //     }
 
-                cin.clear();
-                char badChar = ' ';
-                do { badChar = cin.get(); } while(badChar != '\n');
-                cout << "Invalid move!" << endl << endl;
-            }
+            //     cin.clear();
+            //     char badChar = ' ';
+            //     do { badChar = cin.get(); } while(badChar != '\n');
+            //     cout << "Invalid move!" << endl << endl;
+            // }
 
-            // if the move was successful, switch the player
-            if (board.updateBoard(x, y, player)) {
-                if (player == 'O') {
-                    player = 'X';
-                } else {
-                    player = 'O';
-                }
-            }
+            // // if the move was successful, switch the player
+            // if (board.updateBoard(x, y, player)) {
+            //     if (player == 'O') {
+            //         player = 'X';
+            //     } else {
+            //         player = 'O';
+            //     }
+            // }
 
-        } else if (first) { // this is just so that the user can see the initial, blank board first
-            first = false;
+        // } else if (first) { // this is just so that the user can see the initial, blank board first
+        //     first = false;
 
-        } else if (board.won() && !wonSeen) { // if someone's won the game and the info hasn't been printed already
-            // tell the user who won
-            if (board.winner() == 'D') {
-                cout << endl << "Tie!" << endl;
-                fout << "Tie!" << endl << endl;
-            } else {
-                cout << endl << board.winner() << " won!" << endl;
-                fout << board.winner() << " won!" << endl << endl;
-            }
+        // } else if (board.won() && !wonSeen) { // if someone's won the game and the info hasn't been printed already
+        //     // tell the user who won
+        //     if (board.winner() == 'D') {
+        //         cout << endl << "Tie!" << endl;
+        //         fout << "Tie!" << endl << endl;
+        //     } else {
+        //         cout << endl << board.winner() << " won!" << endl;
+        //         fout << board.winner() << " won!" << endl << endl;
+        //     }
 
-            // save the final board state to the output file
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    for (int k = 0; k < 3; k++) {
-                        for (int l = 0; l < 3; l++) {
-                            fout << board.getSquare(k, i, l, j);
-                        }
-                        fout << " ";
-                    }
-                    fout << endl;
-                }
-                fout << endl;
-            }
+        //     // save the final board state to the output file
+        //     for (int i = 0; i < 3; i++) {
+        //         for (int j = 0; j < 3; j++) {
+        //             for (int k = 0; k < 3; k++) {
+        //                 for (int l = 0; l < 3; l++) {
+        //                     fout << board.getSquare(k, i, l, j);
+        //                 }
+        //                 fout << " ";
+        //             }
+        //             fout << endl;
+        //         }
+        //         fout << endl;
+        //     }
 
             cout << "Check the output file for the replay and results!" << endl;
             wonSeen = true; // ensures that the info won't be printed again
@@ -222,7 +222,16 @@ int main() {
                     window.close();
                     break;
                 case Event::MouseButtonPressed: // adding a game piece when the mouse is clicked
-                    // vec.push_back(new Bubble(Mouse::getPosition(window).x, Mouse::getPosition(window).y));
+                    Point mouseCoord{Mouse::getPosition(window).x, Mouse::getPosition(window).y};
+                    Point SBCoord = board.getCoordinatesOfSmallBoard(mouseCoord.row, mouseCoord.col);
+                    Point pieceCoord = board.getCoordinatesOfPiece(mouseCoord.row, mouseCoord.col);
+                    if (!board.won() && board.updateBoard(SBCoord.row, SBCoord.col, pieceCoord.row, pieceCoord.col, player)) {
+                        if (player == 'O') {
+                            player = 'X';
+                        } else {
+                            player = 'O';
+                        }
+                    }
                     break;
                 case Event::KeyPressed:
                     if (event.key.code == Keyboard::Escape || event.key.code == Keyboard::Q) {
