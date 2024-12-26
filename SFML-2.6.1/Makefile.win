@@ -1,0 +1,171 @@
+CXX = g++.exe
+CXXFLAGS = -Wall -g -std=c++17 -O2 -DNDEBUG
+
+LDFLAGS = -shared
+
+all: makesfml
+
+makesfml: setup system window network graphics audio
+	@echo [INFO]: SFML libraries built
+
+##----------------------------------------------------------------
+DEST = build
+OBJ_DEST = $(DEST)\\obj
+LIB_DEST = $(DEST)\\libs
+
+SRC_PATH = src
+SYSTEM_PATH = SFML\\System
+WINDOW_PATH = SFML\\Window
+NETWORK_PATH = SFML\\Network
+GRAPHICS_PATH = SFML\\Graphics
+AUDIO_PATH = SFML\\Audio
+##----------------------------------------------------------------
+SYSTEM_LIB = libsfml-system.a
+SYSTEM_DLL = sfml-system.dll
+
+SYSTEM_SRC_PATH = $(SRC_PATH)\\$(SYSTEM_PATH)
+SYSTEM_OBJ_PATH = $(OBJ_DEST)\\$(SYSTEM_PATH)
+
+SYSTEM_SRC_FILES = Clock.cpp Err.cpp FileInputStream.cpp Lock.cpp MemoryInputStream.cpp \
+					Mutex.cpp Sleep.cpp String.cpp Thread.cpp ThreadLocal.cpp Time.cpp \
+					Win32/ClockImpl.cpp Win32/MutexImpl.cpp Win32/SleepImpl.cpp \
+					Win32/ThreadImpl.cpp Win32/ThreadLocalImpl.cpp
+
+SYSTEM_OBJECTS = $(SYSTEM_SRC_FILES:%.cpp=$(SYSTEM_OBJ_PATH)/%.o)
+
+$(LIB_DEST)\\$(SYSTEM_LIB): $(SYSTEM_OBJECTS)
+	@echo [INFO]: Built sfml-system objects
+	@echo [INFO]: Linking sfml-system library
+	@$(CXX) $(LDFLAGS) -o $(LIB_DEST)/$(SYSTEM_DLL) -Wl,--out-implib,$(LIB_DEST)/$(SYSTEM_LIB) $(SYSTEM_OBJECTS) -lwinmm -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+	@echo [INFO]: Linked sfml-system library
+
+$(SYSTEM_OBJ_PATH)/%.o: $(SYSTEM_SRC_PATH)/%.cpp
+	@echo [INFO]: Building $@
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude -DSFML_SYSTEM_EXPORTS
+##----------------------------------------------------------------
+WINDOW_LIB = libsfml-window.a
+WINDOW_DLL = sfml-window.dll
+
+WINDOW_SRC_PATH = $(SRC_PATH)\\$(WINDOW_PATH)
+WINDOW_OBJ_PATH = $(OBJ_DEST)\\$(WINDOW_PATH)
+
+WINDOW_SRC_FILES = Clipboard.cpp Context.cpp Cursor.cpp GlContext.cpp GlResource.cpp \
+					Joystick.cpp JoystickManager.cpp Keyboard.cpp Mouse.cpp Touch.cpp \
+					Sensor.cpp SensorManager.cpp VideoMode.cpp Window.cpp WindowBase.cpp WindowImpl.cpp \
+					Win32/ClipboardImpl.cpp Win32/CursorImpl.cpp Win32/InputImpl.cpp \
+					Win32/JoystickImpl.cpp Win32/SensorImpl.cpp Win32/VideoModeImpl.cpp \
+					Win32/WglContext.cpp Win32/WindowImplWin32.cpp Win32/VulkanImplWin32.cpp
+
+WINDOW_OBJECTS = $(WINDOW_SRC_FILES:%=$(WINDOW_OBJ_PATH)/%.o)
+
+$(LIB_DEST)\\$(WINDOW_LIB): $(LIB_DEST)\\$(SYSTEM_LIB) $(WINDOW_OBJECTS)
+	@echo [INFO]: Built sfml-window objects
+	@echo [INFO]: Linking sfml-window library
+	@$(CXX) $(LDFLAGS) -o $(LIB_DEST)/$(WINDOW_DLL) -Wl,--out-implib,$(LIB_DEST)/$(WINDOW_LIB) $(WINDOW_OBJECTS) $(LIB_DEST)/$(SYSTEM_LIB) -lwinmm -lgdi32 -lopengl32 -lglu32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+	@echo [INFO]: Linked sfml-window library
+
+$(WINDOW_OBJ_PATH)/%.cpp.o: $(WINDOW_SRC_PATH)/%.cpp
+	@echo [INFO]: Building $@
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude -Iextlibs/headers/glad/include -Iextlibs/headers/vulkan -Iextlibs/headers/mingw -DSFML_WINDOW_EXPORTS -DUNICODE
+##----------------------------------------------------------------
+NETWORK_LIB = libsfml-network.a
+NETWORK_DLL = sfml-network.dll
+
+NETWORK_SRC_PATH = $(SRC_PATH)\\$(NETWORK_PATH)
+NETWORK_OBJ_PATH = $(OBJ_DEST)\\$(NETWORK_PATH)
+
+NETWORK_SRC_FILES = Ftp.cpp Http.cpp IpAddress.cpp Packet.cpp Socket.cpp SocketSelector.cpp \
+					TcpListener.cpp TcpSocket.cpp UdpSocket.cpp Win32/SocketImpl.cpp
+
+NETWORK_OBJECTS = $(NETWORK_SRC_FILES:%.cpp=$(NETWORK_OBJ_PATH)/%.o)
+
+$(LIB_DEST)\\$(NETWORK_LIB): $(LIB_DEST)\\$(SYSTEM_LIB) $(NETWORK_OBJECTS)
+	@echo [INFO]: Built sfml-network objects
+	@echo [INFO]: Linking sfml-network library
+	@$(CXX) $(LDFLAGS) -o $(LIB_DEST)/$(NETWORK_DLL) -Wl,--out-implib,$(LIB_DEST)/$(NETWORK_LIB) $(NETWORK_OBJECTS) $(LIB_DEST)/$(SYSTEM_LIB) -lws2_32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+	@echo [INFO]: Linked sfml-network library
+
+$(NETWORK_OBJ_PATH)/%.o: $(NETWORK_SRC_PATH)/%.cpp
+	@echo [INFO]: Building $@
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude -DSFML_NETWORK_EXPORTS
+##----------------------------------------------------------------
+GRAPHICS_LIB = libsfml-graphics.a
+GRAPHICS_DLL = sfml-graphics.dll
+
+GRAPHICS_SRC_PATH = $(SRC_PATH)\\$(GRAPHICS_PATH)
+GRAPHICS_OBJ_PATH = $(OBJ_DEST)\\$(GRAPHICS_PATH)
+
+GRAPHICS_SRC_FILES = BlendMode.cpp Color.cpp Font.cpp Glsl.cpp GLCheck.cpp GLExtensions.cpp \
+						Image.cpp ImageLoader.cpp RenderStates.cpp RenderTexture.cpp \
+						RenderTarget.cpp RenderWindow.cpp Shader.cpp Texture.cpp \
+						TextureSaver.cpp Transform.cpp Transformable.cpp View.cpp Vertex.cpp \
+						Shape.cpp CircleShape.cpp RectangleShape.cpp \
+						ConvexShape.cpp Sprite.cpp Text.cpp VertexArray.cpp VertexBuffer.cpp \
+						RenderTextureImpl.cpp RenderTextureImplFBO.cpp RenderTextureImplDefault.cpp
+
+GRAPHICS_OBJECTS = $(GRAPHICS_SRC_FILES:%.cpp=$(GRAPHICS_OBJ_PATH)/%.o)
+
+$(LIB_DEST)\\$(GRAPHICS_LIB): $(LIB_DEST)\\$(SYSTEM_LIB) $(LIB_DEST)\\$(WINDOW_LIB) $(GRAPHICS_OBJECTS)
+	@echo [INFO]: Build sfml-graphics objects
+	@echo [INFO]: Linking sfml-graphics library
+	@$(CXX) $(LDFLAGS) -o $(LIB_DEST)/$(GRAPHICS_DLL) -Wl,--out-implib,$(LIB_DEST)/$(GRAPHICS_LIB) $(GRAPHICS_OBJECTS) $(LIB_DEST)/$(SYSTEM_LIB) $(LIB_DEST)/$(WINDOW_LIB) -lopengl32 -lglu32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -Lextlibs/libs-mingw/$(ARCH) -lfreetype
+	@echo [INFO]: Linked sfml-graphics library
+
+$(GRAPHICS_OBJ_PATH)/%.o: $(GRAPHICS_SRC_PATH)/%.cpp
+	@echo [INFO]: Building $@
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude -Iextlibs/headers/stb_image -Iextlibs/headers/freetype2 -Iextlibs/headers/glad/include -DSFML_GRAPHICS_EXPORTS -DSTBI_FAILURE_USERMSG
+##----------------------------------------------------------------
+AUDIO_LIB = libsfml-audio.a
+AUDIO_DLL = sfml-audio.dll
+
+AUDIO_SRC_PATH = $(SRC_PATH)\\$(AUDIO_PATH)
+AUDIO_OBJ_PATH = $(OBJ_DEST)\\$(AUDIO_PATH)
+
+AUDIO_SRC_FILES = ALCheck.cpp AlResource.cpp AudioDevice.cpp Listener.cpp Music.cpp \
+					Sound.cpp SoundBuffer.cpp SoundBufferRecorder.cpp InputSoundFile.cpp \
+					OutputSoundFile.cpp SoundRecorder.cpp SoundSource.cpp SoundStream.cpp \
+					SoundFileFactory.cpp SoundFileReaderFlac.cpp SoundFileReaderMp3.cpp SoundFileReaderOgg.cpp \
+					SoundFileReaderWav.cpp SoundFileWriterFlac.cpp SoundFileWriterOgg.cpp \
+					SoundFileWriterWav.cpp
+
+AUDIO_OBJECTS = $(AUDIO_SRC_FILES:%.cpp=$(AUDIO_OBJ_PATH)/%.o)
+
+$(LIB_DEST)\\$(AUDIO_LIB): $(LIB_DEST)\\$(SYSTEM_LIB) $(AUDIO_OBJECTS)
+	@echo [INFO]: Build sfml-audio objects
+	@echo [INFO]: Linking sfml-audio library
+	@$(CXX) $(LDFLAGS) -o $(LIB_DEST)/$(AUDIO_DLL) -Wl,--out-implib,$(LIB_DEST)/$(AUDIO_LIB) $(AUDIO_OBJECTS) $(LIB_DEST)/$(SYSTEM_LIB) -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -Lextlibs/libs-mingw/$(ARCH) -lopenal32 -lvorbisenc -lvorbisfile -lvorbis -logg -lFLAC
+	@echo [INFO]: Linked sfml-audio library
+
+$(AUDIO_OBJ_PATH)/%.o: $(AUDIO_SRC_PATH)/%.cpp
+	@echo [INFO]: Building $@
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude -Iextlibs/headers/AL -Iextlibs/headers -Iextlibs/headers/minimp3 -DFLAC__NO_DLL -DOV_EXCLUDE_STATIC_CALLBACKS -DSFML_AUDIO_EXPORTS
+##----------------------------------------------------------------
+
+system: $(LIB_DEST)\\$(SYSTEM_LIB) 
+
+window: $(LIB_DEST)\\$(WINDOW_LIB)
+
+network: $(LIB_DEST)\\$(NETWORK_LIB)
+
+graphics: $(LIB_DEST)\\$(GRAPHICS_LIB)
+
+audio: $(LIB_DEST)\\$(AUDIO_LIB)
+
+setup:
+	@-mkdir $(DEST)
+	@-mkdir $(OBJ_DEST)
+	@-mkdir $(OBJ_DEST)\\SFML
+	@-mkdir $(OBJ_DEST)\\$(SYSTEM_PATH)
+	@-mkdir $(OBJ_DEST)\\$(SYSTEM_PATH)\\Win32
+	@-mkdir $(OBJ_DEST)\\$(WINDOW_PATH)
+	@-mkdir $(OBJ_DEST)\\$(WINDOW_PATH)\\Win32
+	@-mkdir $(OBJ_DEST)\\$(NETWORK_PATH)
+	@-mkdir $(OBJ_DEST)\\$(NETWORK_PATH)\\Win32
+	@-mkdir $(OBJ_DEST)\\$(GRAPHICS_PATH)
+	@-mkdir $(OBJ_DEST)\\$(AUDIO_PATH)
+	@-mkdir $(LIB_DEST)
+
+clean:
+	@rmdir /s /q build
+
+.PHONY: clean all setup system window network graphics audio makesfml

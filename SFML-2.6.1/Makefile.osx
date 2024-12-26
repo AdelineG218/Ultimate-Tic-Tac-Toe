@@ -1,0 +1,239 @@
+CC = gcc
+CCFLAGS = -Wall -g -O2 -DNDEBUG
+
+CXX = g++
+CXXFLAGS = -Wall -g -std=c++17 -O2 -DNDEBUG
+
+LD = g++
+LDFLAGS = -dynamiclib -Wl,-compatibility_version,2.6.1 -Wl,-current_version,2.6.1 -Wl,-rpath,/Library/Frameworks -Wl,-install_name,/usr/local/lib
+
+all: makesfml
+
+makesfml: setup unquarantine system window network graphics audio
+	@echo "[INFO]: SFML libraries built"
+
+##----------------------------------------------------------------
+DEST = build
+OBJ_DEST = $(DEST)/obj
+LIB_DEST = $(DEST)/libs
+
+SRC_PATH = src
+SYSTEM_PATH = SFML/System
+WINDOW_PATH = SFML/Window
+NETWORK_PATH = SFML/Network
+GRAPHICS_PATH = SFML/Graphics
+AUDIO_PATH = SFML/Audio
+##----------------------------------------------------------------
+SYSTEM_LIB = libsfml-system.dylib
+
+SYSTEM_SRC_PATH = $(SRC_PATH)/$(SYSTEM_PATH)
+SYSTEM_OBJ_PATH = $(OBJ_DEST)/$(SYSTEM_PATH)
+
+SYSTEM_SRC_FILES = Clock.cpp Err.cpp Lock.cpp Mutex.cpp Sleep.cpp String.cpp Thread.cpp ThreadLocal.cpp \
+					Time.cpp FileInputStream.cpp MemoryInputStream.cpp Unix/ClockImpl.cpp Unix/MutexImpl.cpp \
+					Unix/SleepImpl.cpp Unix/ThreadImpl.cpp Unix/ThreadLocalImpl.cpp
+
+SYSTEM_OBJECTS = $(SYSTEM_SRC_FILES:%.cpp=$(SYSTEM_OBJ_PATH)/%.o)
+
+$(LIB_DEST)/$(SYSTEM_LIB): $(SYSTEM_OBJECTS)
+	@echo "[INFO]: Built sfml-system objects"
+	@echo "[INFO]: Linking sfml-system library"
+	@$(LD) $(LDFLAGS)/$(SYSTEM_LIB) -o $(LIB_DEST)/$(SYSTEM_LIB) $(SYSTEM_OBJECTS)
+	@echo "[INFO]: Linked sfml-system library"
+
+$(SYSTEM_OBJ_PATH)/%.o: $(SYSTEM_SRC_PATH)/%.cpp
+	@echo "[INFO]: Building $@"
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude
+##----------------------------------------------------------------
+WINDOW_LIB = libsfml-window.dylib
+
+WINDOW_SRC_PATH = $(SRC_PATH)/$(WINDOW_PATH)
+WINDOW_OBJ_PATH = $(OBJ_DEST)/$(WINDOW_PATH)
+
+WINDOW_SRC_FILES = Clipboard.cpp Context.cpp Cursor.cpp GlContext.cpp GlResource.cpp Joystick.cpp \
+					JoystickManager.cpp Keyboard.cpp Mouse.cpp Touch.cpp Sensor.cpp SensorManager.cpp \
+					VideoMode.cpp Window.cpp WindowBase.cpp WindowImpl.cpp OSX/cpp_objc_conversion.mm \
+					OSX/cg_sf_conversion.mm OSX/CursorImpl.mm OSX/ClipboardImpl.mm OSX/InputImpl.mm \
+					OSX/HIDInputManager.mm OSX/HIDJoystickManager.cpp OSX/JoystickImpl.cpp \
+					OSX/NSImage+raw.mm OSX/SensorImpl.cpp OSX/SFApplication.m OSX/SFApplicationDelegate.m \
+					OSX/SFContext.mm OSX/SFKeyboardModifiersHelper.mm OSX/SFOpenGLView.mm \
+					OSX/SFOpenGLView+keyboard.mm OSX/SFOpenGLView+mouse.mm OSX/SFSilentResponder.m \
+					OSX/SFWindow.m OSX/SFWindowController.mm OSX/SFViewController.mm OSX/VideoModeImpl.cpp \
+					OSX/WindowImplCocoa.mm OSX/AutoreleasePoolWrapper.mm
+
+WINDOW_OBJECTS = $(WINDOW_SRC_FILES:%=$(WINDOW_OBJ_PATH)/%.o)
+
+$(LIB_DEST)/$(WINDOW_LIB): $(LIB_DEST)/$(SYSTEM_LIB) $(WINDOW_OBJECTS)
+	@echo "[INFO]: Built sfml-window objects"
+	@echo "[INFO]: Linking sfml-window library"
+	@$(LD) $(LDFLAGS)/$(WINDOW_LIB) -o $(LIB_DEST)/$(WINDOW_LIB) $(WINDOW_OBJECTS) $(LIB_DEST)/$(SYSTEM_LIB) -lpthread -framework Foundation -framework AppKit -framework IOKit -framework Carbon -framework OpenGL 
+	@echo "[INFO]: Linked sfml-window library"
+
+$(WINDOW_OBJ_PATH)/%.m.o: $(WINDOW_SRC_PATH)/%.m
+	@echo "[INFO]: Building $@"
+	@$(CC) $(CCFLAGS) -o $@ -c $< -Isrc -Iinclude
+
+$(WINDOW_OBJ_PATH)/%.cpp.o: $(WINDOW_SRC_PATH)/%.cpp
+	@echo "[INFO]: Building $@"
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude -Iextlibs/headers/glad/include
+
+$(WINDOW_OBJ_PATH)/%.mm.o: $(WINDOW_SRC_PATH)/%.mm
+	@echo "[INFO]: Building $@"
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude
+##----------------------------------------------------------------
+NETWORK_LIB = libsfml-network.dylib
+
+NETWORK_SRC_PATH = $(SRC_PATH)/$(NETWORK_PATH)
+NETWORK_OBJ_PATH = $(OBJ_DEST)/$(NETWORK_PATH)
+
+NETWORK_SRC_FILES = Ftp.cpp Http.cpp IpAddress.cpp Packet.cpp Socket.cpp SocketSelector.cpp TcpListener.cpp \
+					TcpSocket.cpp UdpSocket.cpp Unix/SocketImpl.cpp
+
+NETWORK_OBJECTS = $(NETWORK_SRC_FILES:%.cpp=$(NETWORK_OBJ_PATH)/%.o)
+
+$(LIB_DEST)/$(NETWORK_LIB): $(LIB_DEST)/$(SYSTEM_LIB) $(NETWORK_OBJECTS)
+	@echo "[INFO]: Built sfml-network objects"
+	@echo "[INFO]: Linking sfml-network library"
+	@$(LD) $(LDFLAGS)/$(NETWORK_LIB) -o $(LIB_DEST)/$(NETWORK_LIB) $(NETWORK_OBJECTS) $(LIB_DEST)/$(SYSTEM_LIB)
+	@echo "[INFO]: Linked sfml-network library"
+
+$(NETWORK_OBJ_PATH)/%.o: $(NETWORK_SRC_PATH)/%.cpp
+	@echo "[INFO]: Building $@"
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude
+##----------------------------------------------------------------
+GRAPHICS_LIB = libsfml-graphics.dylib
+
+GRAPHICS_SRC_PATH = $(SRC_PATH)/$(GRAPHICS_PATH)
+GRAPHICS_OBJ_PATH = $(OBJ_DEST)/$(GRAPHICS_PATH)
+
+GRAPHICS_SRC_FILES = BlendMode.cpp Color.cpp Font.cpp Glsl.cpp GLCheck.cpp GLExtensions.cpp Image.cpp \
+						ImageLoader.cpp RenderStates.cpp RenderTexture.cpp RenderTarget.cpp RenderWindow.cpp \
+						Shader.cpp Texture.cpp TextureSaver.cpp Transform.cpp Transformable.cpp View.cpp \
+						Vertex.cpp Shape.cpp CircleShape.cpp RectangleShape.cpp ConvexShape.cpp \
+						Sprite.cpp Text.cpp VertexArray.cpp VertexBuffer.cpp RenderTextureImpl.cpp \
+						RenderTextureImplFBO.cpp RenderTextureImplDefault.cpp
+
+GRAPHICS_OBJECTS = $(GRAPHICS_SRC_FILES:%.cpp=$(GRAPHICS_OBJ_PATH)/%.o)
+
+$(LIB_DEST)/$(GRAPHICS_LIB): $(LIB_DEST)/$(SYSTEM_LIB) $(LIB_DEST)/$(WINDOW_LIB) $(GRAPHICS_OBJECTS)
+	@echo "[INFO]: Build sfml-graphics objects"
+	@echo "[INFO]: Linking sfml-graphics library"
+	@$(LD) $(LDFLAGS)/$(GRAPHICS_LIB) -o $(LIB_DEST)/$(GRAPHICS_LIB) $(GRAPHICS_OBJECTS) $(LIB_DEST)/$(SYSTEM_LIB) $(LIB_DEST)/$(WINDOW_LIB) -Fextlibs/libs-osx/Frameworks -framework OpenGL -framework freetype
+	@echo "[INFO]: Linked sfml-graphics library"
+
+$(GRAPHICS_OBJ_PATH)/%.o: $(GRAPHICS_SRC_PATH)/%.cpp
+	@echo "[INFO]: Building $@"
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude -Iextlibs/headers/stb_image -Iextlibs/headers/freetype2 -Iextlibs/headers/glad/include
+##----------------------------------------------------------------
+AUDIO_LIB = libsfml-audio.dylib
+
+AUDIO_SRC_PATH = $(SRC_PATH)/$(AUDIO_PATH)
+AUDIO_OBJ_PATH = $(OBJ_DEST)/$(AUDIO_PATH)
+
+AUDIO_SRC_FILES = ALCheck.cpp AlResource.cpp AudioDevice.cpp Listener.cpp Music.cpp Sound.cpp SoundBuffer.cpp \
+					SoundBufferRecorder.cpp InputSoundFile.cpp OutputSoundFile.cpp SoundRecorder.cpp SoundSource.cpp \
+					SoundStream.cpp SoundFileFactory.cpp SoundFileReaderFlac.cpp SoundFileReaderMp3.cpp SoundFileReaderOgg.cpp \
+					SoundFileReaderWav.cpp SoundFileWriterFlac.cpp SoundFileWriterOgg.cpp SoundFileWriterWav.cpp
+
+AUDIO_OBJECTS = $(AUDIO_SRC_FILES:%.cpp=$(AUDIO_OBJ_PATH)/%.o)
+
+$(LIB_DEST)/$(AUDIO_LIB): $(LIB_DEST)/$(SYSTEM_LIB) $(AUDIO_OBJECTS)
+	@echo "[INFO]: Build sfml-audio objects"
+	@echo "[INFO]: Linking sfml-audio library"
+	@$(LD) $(LDFLAGS)/$(AUDIO_LIB) -o $(LIB_DEST)/$(AUDIO_LIB) $(AUDIO_OBJECTS) $(LIB_DEST)/$(SYSTEM_LIB) -Fextlibs/libs-osx/Frameworks -framework FLAC -framework ogg -framework OpenAL -framework vorbisenc -framework vorbisfile -framework vorbis
+	@echo "[INFO]: Linked sfml-audio library"
+
+$(AUDIO_OBJ_PATH)/%.o: $(AUDIO_SRC_PATH)/%.cpp
+	@echo "[INFO]: Building $@"
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< -Isrc -Iinclude -Iextlibs/headers/AL -Iextlibs/headers -Iextlibs/headers/minimp3
+##----------------------------------------------------------------
+
+system: $(LIB_DEST)/$(SYSTEM_LIB) 
+
+window: $(LIB_DEST)/$(WINDOW_LIB)
+
+network: $(LIB_DEST)/$(NETWORK_LIB)
+
+graphics: $(LIB_DEST)/$(GRAPHICS_LIB)
+
+audio: $(LIB_DEST)/$(AUDIO_LIB)
+
+setup:
+	@mkdir -p $(DEST)
+	@mkdir -p $(OBJ_DEST)
+	@mkdir -p $(OBJ_DEST)/SFML
+	@mkdir -p $(OBJ_DEST)/$(SYSTEM_PATH)
+	@mkdir -p $(OBJ_DEST)/$(SYSTEM_PATH)/Unix
+	@mkdir -p $(OBJ_DEST)/$(WINDOW_PATH)
+	@mkdir -p $(OBJ_DEST)/$(WINDOW_PATH)/OSX
+	@mkdir -p $(OBJ_DEST)/$(NETWORK_PATH)
+	@mkdir -p $(OBJ_DEST)/$(NETWORK_PATH)/Unix
+	@mkdir -p $(OBJ_DEST)/$(GRAPHICS_PATH)
+	@mkdir -p $(OBJ_DEST)/$(AUDIO_PATH)
+	@mkdir -p $(LIB_DEST)
+
+clean:
+	@rm -fr build
+
+unquarantine:
+	@echo "[INFO]: Unquarantining frameworks, you will be prompted to enter your password to perform this operation..."
+	@sudo xattr -d com.apple.quarantine extlibs || (true)
+	@sudo xattr -d com.apple.quarantine extlibs/libs-osx || (true)
+	@sudo xattr -d com.apple.quarantine extlibs/libs-osx/Frameworks || (true)
+	@sudo xattr -d com.apple.quarantine extlibs/libs-osx/Frameworks/*.framework || (true)
+	@sudo xattr -d com.apple.quarantine extlibs/libs-osx/Frameworks/*.framework/* || (true)
+	@sudo xattr -d com.apple.quarantine extlibs/libs-osx/Frameworks/*.framework/*/A || (true)
+	@echo "[INFO]: ...frameworks unquarantined"
+	@echo "[INFO]: Relinking frameworks..."
+	@echo "[INFO]: ...FLAC........."
+	@rm -r extlibs/libs-osx/Frameworks/FLAC.framework/Versions/Current
+	@cd extlibs/libs-osx/Frameworks/FLAC.framework/Versions; ln -s A Current; cd ../../../../../
+	@rm -r extlibs/libs-osx/Frameworks/FLAC.framework/FLAC
+	@cd extlibs/libs-osx/Frameworks/FLAC.framework/; ln -s Versions/Current/FLAC FLAC; cd ../../../../
+	@rm -r extlibs/libs-osx/Frameworks/FLAC.framework/Resources
+	@cd extlibs/libs-osx/Frameworks/FLAC.framework/; ln -s Versions/Current/Resources Resources; cd ../../../../
+	@echo "[INFO]: ...OpenAL......."
+	@rm -r extlibs/libs-osx/Frameworks/OpenAL.framework/Versions/Current
+	@cd extlibs/libs-osx/Frameworks/OpenAL.framework/Versions; ln -s A Current; cd ../../../../../
+	@rm -r extlibs/libs-osx/Frameworks/OpenAL.framework/OpenAL
+	@cd extlibs/libs-osx/Frameworks/OpenAL.framework/; ln -s Versions/Current/OpenAL OpenAL; cd ../../../../
+	@rm -r extlibs/libs-osx/Frameworks/OpenAL.framework/Resources
+	@cd extlibs/libs-osx/Frameworks/OpenAL.framework/; ln -s Versions/Current/Resources Resources; cd ../../../../
+	@echo "[INFO]: ...freetype....."
+	@rm -r extlibs/libs-osx/Frameworks/freetype.framework/Versions/Current
+	@cd extlibs/libs-osx/Frameworks/freetype.framework/Versions; ln -s A Current; cd ../../../../../
+	@rm -r extlibs/libs-osx/Frameworks/freetype.framework/freetype
+	@cd extlibs/libs-osx/Frameworks/freetype.framework/; ln -s Versions/Current/freetype freetype; cd ../../../../
+	@rm -r extlibs/libs-osx/Frameworks/freetype.framework/Resources
+	@cd extlibs/libs-osx/Frameworks/freetype.framework/; ln -s Versions/Current/Resources Resources; cd ../../../../
+	@echo "[INFO]: ...ogg.........."
+	@rm -r extlibs/libs-osx/Frameworks/ogg.framework/Versions/Current
+	@cd extlibs/libs-osx/Frameworks/ogg.framework/Versions; ln -s A Current; cd ../../../../../
+	@rm -r extlibs/libs-osx/Frameworks/ogg.framework/ogg
+	@cd extlibs/libs-osx/Frameworks/ogg.framework/; ln -s Versions/Current/ogg ogg; cd ../../../../
+	@rm -r extlibs/libs-osx/Frameworks/ogg.framework/Resources
+	@cd extlibs/libs-osx/Frameworks/ogg.framework/; ln -s Versions/Current/Resources Resources; cd ../../../../
+	@echo "[INFO]: ...vorbis......."
+	@rm -r extlibs/libs-osx/Frameworks/vorbis.framework/Versions/Current
+	@cd extlibs/libs-osx/Frameworks/vorbis.framework/Versions; ln -s A Current; cd ../../../../../
+	@rm -r extlibs/libs-osx/Frameworks/vorbis.framework/vorbis
+	@cd extlibs/libs-osx/Frameworks/vorbis.framework/; ln -s Versions/Current/vorbis vorbis; cd ../../../../
+	@rm -r extlibs/libs-osx/Frameworks/vorbis.framework/Resources
+	@cd extlibs/libs-osx/Frameworks/vorbis.framework/; ln -s Versions/Current/Resources Resources; cd ../../../../
+	@echo "[INFO]: ...vorbisenc...."
+	@rm -r extlibs/libs-osx/Frameworks/vorbisenc.framework/Versions/Current
+	@cd extlibs/libs-osx/Frameworks/vorbisenc.framework/Versions; ln -s A Current; cd ../../../../../
+	@rm -r extlibs/libs-osx/Frameworks/vorbisenc.framework/vorbisenc
+	@cd extlibs/libs-osx/Frameworks/vorbisenc.framework/; ln -s Versions/Current/vorbisenc vorbisenc; cd ../../../../
+	@rm -r extlibs/libs-osx/Frameworks/vorbisenc.framework/Resources
+	@cd extlibs/libs-osx/Frameworks/vorbisenc.framework/; ln -s Versions/Current/Resources Resources; cd ../../../../
+	@echo "[INFO]: ...vorbisfile..."
+	@rm -r extlibs/libs-osx/Frameworks/vorbisfile.framework/Versions/Current
+	@cd extlibs/libs-osx/Frameworks/vorbisfile.framework/Versions; ln -s A Current; cd ../../../../../
+	@rm -r extlibs/libs-osx/Frameworks/vorbisfile.framework/vorbisfile
+	@cd extlibs/libs-osx/Frameworks/vorbisfile.framework/; ln -s Versions/Current/vorbisfile vorbisfile; cd ../../../../
+	@rm -r extlibs/libs-osx/Frameworks/vorbisfile.framework/Resources
+	@cd extlibs/libs-osx/Frameworks/vorbisfile.framework/; ln -s Versions/Current/Resources Resources; cd ../../../../
+	@echo "[INFO]: ...frameworks linked"
+
+.PHONY: unquarantine clean all setup system window network graphics audio makesfml
