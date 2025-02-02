@@ -29,22 +29,27 @@ int main() {
     
     // importing and validating the textures for the sfml game piece sprites
     Texture xTexture;
-    if (!xTexture.loadFromFile("data/X.png")) {
+    if (!xTexture.loadFromFile("data/Butter.png")) {
         cerr << "Could not load image" << endl;
         return -2;
     }
     Texture oTexture;
-    if (!oTexture.loadFromFile("data/O.png")) {
+    if (!oTexture.loadFromFile("data/Blueberry.png")) {
         cerr << "Could not load image" << endl;
         return -2;
     }
     Texture xWinTexture;
-    if (!xWinTexture.loadFromFile("data/X-win.png")) {
+    if (!xWinTexture.loadFromFile("data/Butter-win.png")) {
         cerr << "Could not load image" << endl;
         return -2;
     }
     Texture oWinTexture;
-    if (!oWinTexture.loadFromFile("data/O-win.png")) {
+    if (!oWinTexture.loadFromFile("data/Blueberry-win.png")) {
+        cerr << "Could not load image" << endl;
+        return -2;
+    }
+    Texture boardTexture;
+    if (!boardTexture.loadFromFile("data/Waffle.png")) {
         cerr << "Could not load image" << endl;
         return -2;
     }
@@ -53,47 +58,54 @@ int main() {
     while (window.isOpen()) {
         window.clear(Color::White); // clears the window
 
-        // creating the lines for the tic-tic-toe board
-        for (int bigLineH = 0; bigLineH < 2; bigLineH++) { // drawing the large horizontal lines
-            RectangleShape horizontal;
-            horizontal.setSize(Vector2f(880, 10));
-            horizontal.setFillColor(Color::Black);
-            horizontal.setPosition(10, (bigLineH+1)*300-5);
-            window.draw(horizontal);
-        }
-        for (int bigLineV = 0; bigLineV < 2; bigLineV++) { // drawing the large vertical lines
-            RectangleShape vertical;
-            vertical.setSize(Vector2f(10, 880));
-            vertical.setFillColor(Color::Black);
-            vertical.setPosition((bigLineV+1)*300-5, 10);
-            window.draw(vertical);
-        }
+        // // creating the lines for the tic-tic-toe board
+        // for (int bigLineH = 0; bigLineH < 2; bigLineH++) { // drawing the large horizontal lines
+        //     RectangleShape horizontal;
+        //     horizontal.setSize(Vector2f(880, 10));
+        //     horizontal.setFillColor(Color::Black);
+        //     horizontal.setPosition(10, (bigLineH+1)*300-5);
+        //     window.draw(horizontal);
+        // }
+        // for (int bigLineV = 0; bigLineV < 2; bigLineV++) { // drawing the large vertical lines
+        //     RectangleShape vertical;
+        //     vertical.setSize(Vector2f(10, 880));
+        //     vertical.setFillColor(Color::Black);
+        //     vertical.setPosition((bigLineV+1)*300-5, 10);
+        //     window.draw(vertical);
+        // }
 
-        for (int smallLineBi = 0; smallLineBi < 3; smallLineBi++) { // drawing the small lines
-            for (int smallLineBj = 0; smallLineBj < 3; smallLineBj++) {
-                RectangleShape h1; // small horizontal line 1
-                h1.setSize(Vector2f(275, 6));
-                h1.setFillColor(Color::Black);
-                h1.setPosition(smallLineBi*300 + 10, (smallLineBj)*300 + 100-3);
-                window.draw(h1);
-                RectangleShape h2; // small horizontal line 2
-                h2.setSize(Vector2f(275, 6));
-                h2.setFillColor(Color::Black);
-                h2.setPosition(smallLineBi*300 + 10, (smallLineBj)*300 + 200-3);
-                window.draw(h2);
+        // for (int smallLineBi = 0; smallLineBi < 3; smallLineBi++) { // drawing the small lines
+        //     for (int smallLineBj = 0; smallLineBj < 3; smallLineBj++) {
+        //         RectangleShape h1; // small horizontal line 1
+        //         h1.setSize(Vector2f(275, 6));
+        //         h1.setFillColor(Color::Black);
+        //         h1.setPosition(smallLineBi*300 + 10, (smallLineBj)*300 + 100-3);
+        //         window.draw(h1);
+        //         RectangleShape h2; // small horizontal line 2
+        //         h2.setSize(Vector2f(275, 6));
+        //         h2.setFillColor(Color::Black);
+        //         h2.setPosition(smallLineBi*300 + 10, (smallLineBj)*300 + 200-3);
+        //         window.draw(h2);
 
-                RectangleShape v1; // small vertical line 1
-                v1.setSize(Vector2f(6, 275));
-                v1.setFillColor(Color::Black);
-                v1.setPosition((smallLineBj)*300 + 100-3, smallLineBi*300 + 10);
-                window.draw(v1);
-                RectangleShape v2; // small vertical line 2
-                v2.setSize(Vector2f(6, 275));
-                v2.setFillColor(Color::Black);
-                v2.setPosition((smallLineBj)*300 + 200-3, smallLineBi*300 + 10);
-                window.draw(v2);
-            }
-        }
+        //         RectangleShape v1; // small vertical line 1
+        //         v1.setSize(Vector2f(6, 275));
+        //         v1.setFillColor(Color::Black);
+        //         v1.setPosition((smallLineBj)*300 + 100-3, smallLineBi*300 + 10);
+        //         window.draw(v1);
+        //         RectangleShape v2; // small vertical line 2
+        //         v2.setSize(Vector2f(6, 275));
+        //         v2.setFillColor(Color::Black);
+        //         v2.setPosition((smallLineBj)*300 + 200-3, smallLineBi*300 + 10);
+        //         window.draw(v2);
+        //     }
+        // }
+
+        // drawing the board
+        Sprite boardSprite;
+        boardSprite.setTexture(boardTexture);
+        boardSprite.setPosition(0,0);
+        boardSprite.setScale(0.5, 0.5);
+        window.draw(boardSprite);
 
         // drawing the game pieces (x's and o's)
         for (int i = 0; i < 3; i++) {
@@ -115,9 +127,9 @@ int main() {
                         } else if (current == 'x') {
                             currentSprite.setTexture(xWinTexture);
                         }
-
-                        currentSprite.setScale(0.10,0.10); // downsizing the scale of each texture to 1/10
-                        currentSprite.setPosition(i*300 + k*100, j*300 + l*100);            
+                        
+                        currentSprite.setScale(0.5,0.5); // downsizing the scale of each texture to 1/10
+                        currentSprite.setPosition(i*300 + k*100 - 10*(i-2), j*300 + l*100 - 10*(j-2));            
                         window.draw(currentSprite);
                     }
                 }
@@ -129,10 +141,10 @@ int main() {
         if (!board.won() && (smallBoardPos.row > -1 || smallBoardPos.row < 3 || smallBoardPos.col > -1 || smallBoardPos.col < 3 || !board.getSmallBoardWon(smallBoardPos.row, smallBoardPos.col))) {
             RectangleShape currentSmallBoard;
             currentSmallBoard.setSize(Vector2f(280, 280));
-            currentSmallBoard.setOutlineColor(Color::Green);
-            currentSmallBoard.setOutlineThickness(5);
+            currentSmallBoard.setOutlineColor(Color(101, 41, 8));
+            currentSmallBoard.setOutlineThickness(8);
             currentSmallBoard.setFillColor(Color(0, 0, 0, 0));
-            currentSmallBoard.setPosition(smallBoardPos.row*300 + 10, smallBoardPos.col*300 + 10);
+            currentSmallBoard.setPosition(smallBoardPos.row*300 - 10*(smallBoardPos.row-2), smallBoardPos.col*300 - 10*(smallBoardPos.col-2));
             window.draw(currentSmallBoard);
         }
 
