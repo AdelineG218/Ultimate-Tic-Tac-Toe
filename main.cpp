@@ -18,9 +18,8 @@ int main() {
     }
 
     LargeBoard board = LargeBoard(); // this is the ultimate tic-tac-toe board
-    int x, y; // used later to save user input
     bool first = true; // this is to check if it's the first iteration of the sfml while loop
-    bool wonSeen = false; // this is to check if the user has seen the final results
+    // bool wonSeen = false; // this is to check if the user has seen the final results
     char player = 'O'; // this is the current player
 
     // setting up sfml variables
@@ -50,6 +49,26 @@ int main() {
     }
     Texture boardTexture;
     if (!boardTexture.loadFromFile("data/Waffle.png")) {
+        cerr << "Could not load image" << endl;
+        return -2;
+    }
+    Texture startTexture;
+    if (!startTexture.loadFromFile("data/Start.png")) {
+        cerr << "Could not load image" << endl;
+        return -2;
+    }
+    Texture endXWinTexture;
+    if (!endXWinTexture.loadFromFile("data/End-butter-win.png")) {
+        cerr << "Could not load image" << endl;
+        return -2;
+    }
+    Texture endOWinTexture;
+    if (!endOWinTexture.loadFromFile("data/End-blueberry-win.png")) {
+        cerr << "Could not load image" << endl;
+        return -2;
+    }
+    Texture endTieTexture;
+    if (!endTieTexture.loadFromFile("data/End-tie.png")) {
         cerr << "Could not load image" << endl;
         return -2;
     }
@@ -129,7 +148,7 @@ int main() {
                         }
                         
                         currentSprite.setScale(0.5,0.5); // downsizing the scale of each texture to 1/10
-                        currentSprite.setPosition(i*300 + k*100 - 10*(i-2), j*300 + l*100 - 10*(j-2));            
+                        currentSprite.setPosition(i*300 + k*100 - 10*(i-2) - 5*(k-1), j*300 + l*100 - 10*(j-2) - 5*(l-1));            
                         window.draw(currentSprite);
                     }
                 }
@@ -148,9 +167,31 @@ int main() {
             window.draw(currentSmallBoard);
         }
 
+        if (first) {
+            Sprite startScreen;
+            startScreen.setTexture(startTexture);
+            window.draw(startScreen);
+        } else if (board.won()) {
+            RectangleShape endBackground;
+            endBackground.setSize(Vector2f(900, 900));
+            endBackground.setFillColor(Color(0, 0, 0, 127.5));
+            window.draw(endBackground);
+
+            Sprite endScreen;
+            if (board.winner() == 'D') {
+                endScreen.setTexture(endTieTexture);
+            } else if (board.winner() == 'X') {
+                endScreen.setTexture(endXWinTexture);
+            } else {
+                endScreen.setTexture(endOWinTexture);
+            }
+            endScreen.setPosition(150, 300);
+            window.draw(endScreen);
+        }
+
         window.display(); // displaying the window
 
-        if (/*!first &&*/ !board.won()) { // if it's not the first iteration of the while loop and no one's won the game
+        if (!first && !board.won()) { // if it's not the first iteration of the while loop and no one's won the game
             // print the current board state
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -196,7 +237,7 @@ int main() {
             //     }
             // }
 
-        // } else if (first) { // this is just so that the user can see the initial, blank board first
+        // } else if (first) { // this is for the start screen
         //     first = false;
 
         // } else if (board.won() && !wonSeen) { // if someone's won the game and the info hasn't been printed already
@@ -236,12 +277,23 @@ int main() {
                 case Event::MouseButtonPressed: // adding a game piece when the mouse is clicked
                     {
                         Point mouseCoord{Mouse::getPosition(window).x, Mouse::getPosition(window).y};
-                        Point SBCoord = board.getCoordinatesOfSmallBoard(mouseCoord.row, mouseCoord.col);
-                        Point pieceCoord = board.getCoordinatesOfPiece(mouseCoord.row, mouseCoord.col, SBCoord.row, SBCoord.col);
-                        if (!board.won() && board.updateBoard(SBCoord.row, SBCoord.col, pieceCoord.row, pieceCoord.col, player)) {
-                            if (player == 'O') {
-                                player = 'X';
-                            } else {
+                        if (!first && !board.won()) {
+                            Point SBCoord = board.getCoordinatesOfSmallBoard(mouseCoord.row, mouseCoord.col);
+                            Point pieceCoord = board.getCoordinatesOfPiece(mouseCoord.row, mouseCoord.col, SBCoord.row, SBCoord.col);
+                            if (!board.won() && board.updateBoard(SBCoord.row, SBCoord.col, pieceCoord.row, pieceCoord.col, player)) {
+                                if (player == 'O') {
+                                    player = 'X';
+                                } else {
+                                    player = 'O';
+                                }
+                            }
+                        } else if (first) {
+                            if (mouseCoord.row >= 375 && mouseCoord.row <= 525 && mouseCoord.col >= 475 && mouseCoord.col <= 525) {
+                                first = false;
+                            }
+                        } else if (board.won()) {
+                            if (mouseCoord.row >= 362 && mouseCoord.row <= 538 && mouseCoord.col >= 489 && mouseCoord.col <= 564) {
+                                board = LargeBoard();
                                 player = 'O';
                             }
                         }

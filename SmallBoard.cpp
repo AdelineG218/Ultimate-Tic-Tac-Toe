@@ -45,11 +45,11 @@ void SmallBoard::checkBoardWon(const int ROW, const int COL, const char PLAYER) 
 bool SmallBoard::updateBoard(const int ROW, const int COL, const char PLAYER) {
     if (ROW > 2 || ROW < 0 || COL > 2 || COL < 0 || !(PLAYER == 'O' || PLAYER == 'X')) {
         // cout << "move out of SB bounds" << endl;
-        cout << "Invalid move!" << endl << endl;
+        cout << "Invalid move!" << endl;
         return false;
     } else if (_board[ROW][COL] != '-') {
         // cout << "piece taken" << endl;
-        cout << "Invalid move!" << endl << endl;
+        cout << "Invalid move!" << endl;
         return false;
     }
 

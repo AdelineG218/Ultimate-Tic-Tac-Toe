@@ -61,13 +61,13 @@ bool LargeBoard::updateBoard(const int S_ROW, const int S_COL, const int ROW, co
         updateSmallBoardPos(S_ROW, S_COL);
     } else if (!_board[_currentBoard.row][_currentBoard.col].won() && (S_ROW != _currentBoard.row || S_COL != _currentBoard.col)) {
         // cout << "not in correct SB Proper SB: ("  << _currentBoard.row << "," << _currentBoard.col << ") Chosen SB: ("  << S_ROW << "," << S_COL << ")" << endl;
-        cout << "Invalid move!" << endl << endl;
+        cout << "Invalid move!" << endl;
         return false;
     } else if (_board[_currentBoard.row][_currentBoard.col].won() && _board[S_ROW][S_COL].won()) {
         _currentBoard.row = -1;
         _currentBoard.col = -1;
         // cout << "idk... just try again" << endl;
-        cout << "Invalid move!" << endl << endl;
+        cout << "Invalid move!" << endl;
         return false;
     }
     
