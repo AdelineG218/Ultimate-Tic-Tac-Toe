@@ -138,7 +138,7 @@ int main() {
 
         window.display(); // displaying the window
 
-        if (!first && !board.won()) { // if it's not the first iteration of the while loop and no one's won the game
+        if (/*!first &&*/ !board.won()) { // if it's not the first iteration of the while loop and no one's won the game
             // print the current board state
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -154,7 +154,7 @@ int main() {
             }
             fout << endl << endl;
 
-            cout << endl << "Player " << player << endl; // lets the users know whose turn it is
+            // cout << endl << "Player " << player << endl; // lets the users know whose turn it is
             // if there's not a specified small board that the player must play in, prompt the user to enter a small board
             // if (smallBoardPos.row < 0 || smallBoardPos.row > 2 || smallBoardPos.col < 0 || smallBoardPos.col > 2 || board.getSmallBoardWon(smallBoardPos.row, smallBoardPos.col)) {
             //     board.updateSmallBoardPos();
@@ -211,8 +211,8 @@ int main() {
         //         fout << endl;
         //     }
 
-            cout << "Check the output file for the replay and results!" << endl;
-            wonSeen = true; // ensures that the info won't be printed again
+            // cout << "Check the output file for the replay and results!" << endl;
+            // wonSeen = true; // ensures that the info won't be printed again
         }
         
         // allows the window to close via clicking the x, pressing Escape, or pressing Q
@@ -222,14 +222,16 @@ int main() {
                     window.close();
                     break;
                 case Event::MouseButtonPressed: // adding a game piece when the mouse is clicked
-                    Point mouseCoord{Mouse::getPosition(window).x, Mouse::getPosition(window).y};
-                    Point SBCoord = board.getCoordinatesOfSmallBoard(mouseCoord.row, mouseCoord.col);
-                    Point pieceCoord = board.getCoordinatesOfPiece(mouseCoord.row, mouseCoord.col);
-                    if (!board.won() && board.updateBoard(SBCoord.row, SBCoord.col, pieceCoord.row, pieceCoord.col, player)) {
-                        if (player == 'O') {
-                            player = 'X';
-                        } else {
-                            player = 'O';
+                    {
+                        Point mouseCoord{Mouse::getPosition(window).x, Mouse::getPosition(window).y};
+                        Point SBCoord = board.getCoordinatesOfSmallBoard(mouseCoord.row, mouseCoord.col);
+                        Point pieceCoord = board.getCoordinatesOfPiece(mouseCoord.row, mouseCoord.col, SBCoord.row, SBCoord.col);
+                        if (!board.won() && board.updateBoard(SBCoord.row, SBCoord.col, pieceCoord.row, pieceCoord.col, player)) {
+                            if (player == 'O') {
+                                player = 'X';
+                            } else {
+                                player = 'O';
+                            }
                         }
                     }
                     break;

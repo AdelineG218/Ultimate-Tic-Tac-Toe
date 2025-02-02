@@ -7,7 +7,7 @@ class LargeBoard : public ABoard {
     public:
         LargeBoard();
         void checkBoardWon(const int ROW, const int COL, const char PLAYER) override final;
-        Point getCoordinatesOfPiece(const int X, const int Y) const;
+        Point getCoordinatesOfPiece(const int X, const int Y, const int S_ROW, const int S_COL) const;
         Point getCoordinatesOfSmallBoard(const int X, const int Y) const;
         Point getSmallBoardPos() const;
         bool getSmallBoardWon(const int S_ROW, const int S_COL) const;

@@ -60,11 +60,13 @@ bool LargeBoard::updateBoard(const int S_ROW, const int S_COL, const int ROW, co
     if ((_currentBoard.row == -1 || _board[_currentBoard.row][_currentBoard.col].won()) && !_board[S_ROW][S_COL].won()) {
         updateSmallBoardPos(S_ROW, S_COL);
     } else if (!_board[_currentBoard.row][_currentBoard.col].won() && (S_ROW != _currentBoard.row || S_COL != _currentBoard.col)) {
+        // cout << "not in correct SB Proper SB: ("  << _currentBoard.row << "," << _currentBoard.col << ") Chosen SB: ("  << S_ROW << "," << S_COL << ")" << endl;
         cout << "Invalid move!" << endl << endl;
         return false;
     } else if (_board[_currentBoard.row][_currentBoard.col].won() && _board[S_ROW][S_COL].won()) {
         _currentBoard.row = -1;
         _currentBoard.col = -1;
+        // cout << "idk... just try again" << endl;
         cout << "Invalid move!" << endl << endl;
         return false;
     }
@@ -100,30 +102,10 @@ bool LargeBoard::getSmallBoardWon(const int S_ROW, const int S_COL) const {
     return _board[S_ROW][S_COL].won();
 }
 
-Point LargeBoard::getCoordinatesOfPiece(const int X, const int Y) const {
+Point LargeBoard::getCoordinatesOfPiece(const int X, const int Y, const int S_ROW, const int S_COL) const {
     Point coord = Point();
-    if (X < 300) {
-        coord.row = 0;
-    } else if (X < 600) {
-        coord.row = 1;
-    } else {
-        coord.row = 2;
-    }
-
-    if (Y < 300) {
-        coord.col = 0;
-    } else if (Y < 600) {
-        coord.col = 1;
-    } else {
-        coord.col = 2;
-    }
-    return coord;
-}
-Point LargeBoard::getCoordinatesOfSmallBoard(const int X, const int Y) const {
-    Point smallBoard = getCoordinatesOfPiece(X, Y);
-    Point coord = Point();
-    int x = X-300*smallBoard.col;
-    int y = Y-300*smallBoard.row;
+    int x = X-300*S_ROW;
+    int y = Y-300*S_COL;
 
     if (x < 100) {
         coord.row = 0;
@@ -136,6 +118,26 @@ Point LargeBoard::getCoordinatesOfSmallBoard(const int X, const int Y) const {
     if (y < 100) {
         coord.col = 0;
     } else if (y < 200) {
+        coord.col = 1;
+    } else {
+        coord.col = 2;
+    }
+    return coord;
+}
+
+Point LargeBoard::getCoordinatesOfSmallBoard(const int X, const int Y) const {
+    Point coord = Point();
+    if (X < 300) {
+        coord.row = 0;
+    } else if (X < 600) {
+        coord.row = 1;
+    } else {
+        coord.row = 2;
+    }
+
+    if (Y < 300) {
+        coord.col = 0;
+    } else if (Y < 600) {
         coord.col = 1;
     } else {
         coord.col = 2;
