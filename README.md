@@ -1,5 +1,6 @@
 # Ultimate Tic-Tac-Toe
 Tic-tac-toe but for big kids (and with waffles).
+[![Waffle-Themed Ultimate Tic-Tac-Toe](https://img.youtube.com/vi/F2aR_Y_SlDM/0.jpg)](https://www.youtube.com/watch?v=F2aR_Y_SlDM)
 
 ## Installation and Usage
 
