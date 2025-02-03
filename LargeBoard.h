@@ -17,5 +17,6 @@ class LargeBoard : public ABoard {
     private:
         SmallBoard** _board;
         Point _currentBoard;
+        int numBoardsLeft;
 };
 #endif
